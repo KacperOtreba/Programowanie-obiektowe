@@ -26,7 +26,6 @@ namespace lekcja_2024._05._21
       simulator.StopAll();
       simulator.DisplayAllMachines();
 
-      Console.ReadKey();
     }
   }
 }
