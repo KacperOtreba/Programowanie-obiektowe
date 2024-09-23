@@ -1,15 +1,13 @@
 ﻿namespace lekcja_2024._09._09;
 class Program
 {
-    public class Shape
+    public abstract class Shape
     {
-        public virtual float CalculateArea()
+        public abstract float CalculateArea();
+        public abstract float CalculatePerimeter();
+        internal void DisplayInfo()
         {
-            return 0;
-        }
-        public virtual float CalculatePerimeter()
-        {
-            return 0;
+            System.Console.WriteLine("To jest kształt");
         }
     }
     public class Rectangle : Shape
@@ -52,20 +50,24 @@ class Program
     }
     public class Triangle : Shape
     {
-        private float Height;
-        private float Base;
-        public Triangle(float h, float b)
+        private float sideA;
+        private float sideB;
+        private float sideC;
+
+        public Triangle(float sidea, float sideb, float sidec)
         {
-            Height = h;
-            Base = b;
+            sideA = sidea;
+            sideB = sideb;
+            sideC = sidec;
         }
         public override float CalculateArea()
         {
-            return (float)Math.Round((Base * Height) / 2, 2);
+            float s = (sideA + sideB + sideC) / 2;
+            return (float)Math.Sqrt(s * (s - sideA) * (s - sideB) * (s - sideC));
         }
-        public float CalculatePerimeter(float a, float b, float c)
+        public override float CalculatePerimeter()
         {
-            return (float)Math.Round(a + b + c, 2);
+            return sideA + sideB + sideC;
         }
 
     }
@@ -101,13 +103,25 @@ class Program
                     System.Console.WriteLine("Obwód koła {0}", circle.CalculatePerimeter());
                     break;
                 case 3:
-                    float Height = GetValidInput("Podaj wysokość: ");
-                    float Base = GetValidInput("Podaj długość podstawy: ");
-                    float a = GetValidInput("Podaj 1 bok trójkąta: ");
-                    float c = GetValidInput("Podaj 2 bok trójkąta: ");
-                    Triangle triangle = new Triangle(Height, Base);
-                    System.Console.WriteLine("Powierzchnia trójkąta {0}", triangle.CalculateArea());
-                    System.Console.WriteLine("Obwód trójkąta {0}", triangle.CalculatePerimeter(a, Base, c));
+                    float sideA, sideB, sideC;
+                    do
+                    {
+                        sideA = GetValidInput("Podaj długość boku A: ");
+                        sideB = GetValidInput("Podaj długość boku B: ");
+                        sideC = GetValidInput("Podaj długość boku C: ");
+                        if (!IsValidTriangle(sideA, sideB, sideC))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            System.Console.WriteLine("\nNieprawidłowe dane, spróbuj ponownie.\n");
+                            Console.ResetColor();
+                        }
+
+                    }
+                    while (!IsValidTriangle(sideA, sideB, sideC));
+                    Triangle tri = new Triangle(sideA, sideB, sideC);
+                    System.Console.WriteLine($"Powierzchnia trójkąta: {tri.CalculateArea()}");
+                    System.Console.WriteLine($"Obwód trójkąta: {tri.CalculatePerimeter()}");
+                    tri.DisplayInfo();
                     break;
                 case 6:
                     return;
@@ -117,10 +131,16 @@ class Program
             }
         }
     }
-    public static float GetFloatFromUsername()
+
+    private static bool IsValidTriangle(float sideA, float sideB, float sideC)
+    {
+        return (sideA + sideB > sideC) && (sideB + sideC > sideA) && (sideA + sideC > sideB);
+    }
+
+    public static float GetFloatFromUser()
     {
         float result;
-        while (!float.TryParse(Console.ReadLine(), out result) && result > 0)
+        while (!float.TryParse(Console.ReadLine(), out result) && result < 0) //
         {
             Console.WriteLine("Nieprawidłowe dane, spróbuj ponownie");
         }
@@ -131,7 +151,7 @@ class Program
         float result;
         while (true)
         {
-            System.Console.WriteLine(prompt);
+            System.Console.Write(prompt);
             if (float.TryParse(Console.ReadLine(), out result) && result > 0)
             {
                 return result;
